@@ -1,0 +1,67 @@
+JOB DESCRIPTION: Senior Full-Stack Developer
+
+About Us
+We are a rapidly growing tech company specializing in cloud-based solutions and microservices architecture. Join our talented engineering team and help build scalable applications.
+
+Job Title: Senior Full-Stack Developer
+Location: Remote
+Experience Level: 4+ years
+
+Role Description
+We are seeking an experienced Full-Stack Developer with strong expertise in JavaScript, TypeScript, and modern web technologies. You will work on building and maintaining microservices architecture using Node.js, React, and cloud platforms.
+
+Key Responsibilities
+• Design and develop scalable REST API services using Node.js and Express.js
+• Build responsive frontend applications with React and TypeScript
+• Implement microservices architecture and containerization using Docker and Kubernetes
+• Develop and maintain CI/CD pipelines for automated testing and deployment
+• Work with PostgreSQL and MongoDB databases for data persistence
+• Collaborate with DevOps team to deploy applications on AWS infrastructure
+• Mentor junior developers and conduct code reviews
+• Participate in Agile sprint planning and development processes
+
+Required Technical Skills
+• 4+ years of professional experience with JavaScript and TypeScript
+• Expert-level proficiency in React for frontend development
+• Strong backend development experience with Node.js and Express.js
+• Solid understanding of Microservices Architecture
+• Proficiency with Docker and containerization
+• Experience with REST API design and development
+• Knowledge of SQL databases (PostgreSQL, MySQL) and NoSQL (MongoDB)
+• Experience with Git and GitHub version control
+• Kubernetes experience highly preferred
+• AWS or other cloud platform experience
+
+Software & Technologies
+• Languages: JavaScript, TypeScript, Python
+• Frontend: React, HTML5, CSS3, Tailwind CSS
+• Backend: Node.js, Express.js, NestJS, FastAPI
+• Databases: PostgreSQL, MongoDB, Redis
+• DevOps: Docker, Kubernetes, Terraform
+• CI/CD: Jenkins, GitLab, GitHub Actions
+• Cloud: AWS, EC2, S3, RDS
+
+Required Education & Qualifications
+• Bachelor's degree in Computer Science or related field
+• Professional experience in full-stack development
+• Portfolio or GitHub repository showcasing projects
+
+Desirable Qualifications
+• AWS Certified Solutions Architect
+• Docker or Kubernetes certification
+• Experience with GraphQL
+• Open source contributions
+• Experience with system design and optimization
+
+Working Environment
+• Agile methodology and sprint-based development
+• Collaborative team environment
+• Remote-first company culture
+• Professional growth opportunities
+
+Compensation & Benefits
+• Competitive salary
+• Health insurance and retirement plans
+• Professional development budget
+
+• Flexible working hours

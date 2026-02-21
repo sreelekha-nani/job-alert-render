@@ -1,0 +1,46 @@
+🚀 Connected to MongoDB via Prisma
+🔧 Initializing database...
+✅ Database initialized. Current users: 4
+🚀 Server listening on http://localhost:5000
+🕒 Initializing cron jobs...
+🚀 Running initial job scrape on startup...
+🔄 Starting job scraping cycle...
+📄 Scraping Indeed...
+📄 Scraping Naukri...
+📄 Scraping LinkedIn...
+📊 Generated 400 jobs from scrapers
+✔️ 400 jobs passed validation
+🗑️ Clearing old jobs...
+✅ Batch 1: Created 100 jobs
+✅ Batch 2: Created 100 jobs
+✅ Batch 3: Created 100 jobs
+✅ Batch 4: Created 100 jobs
+✅ Successfully scraped and stored 400 new jobs!
+✅ Initial job scraping completed successfully
+✅ Job scraping scheduled with pattern: 0 */12 * * *
+✅ GET /api/jobs route was hit
+✅ GET /api/jobs route was hit
+✅ GET /api/jobs route was hit
+✅ GET /api/jobs route was hit
+✅ GET /api/jobs route was hit
+✅ GET /api/jobs route was hit
+✅ GET /api/jobs route was hit
+✅ GET /api/jobs route was hit
+✅ GET /api/jobs route was hit
+✅ GET /api/jobs route was hit
+✅ Email sent successfully: 250 2.0.0 OK  1768630648 98e67ed59e1d1-352677c90easm5974939a91.4 - gsmtp
+🚀 Running scheduled job scrape at 2026-01-17T06:30:00.426Z
+🔄 Starting job scraping cycle...
+📄 Scraping Indeed...
+📄 Scraping Naukri...
+📄 Scraping LinkedIn...
+📊 Generated 400 jobs from scrapers
+✔️ 400 jobs passed validation
+🗑️ Clearing old jobs...
+✅ Batch 1: Created 100 jobs
+✅ Batch 2: Created 100 jobs
+✅ Batch 3: Created 100 jobs
+✅ Batch 4: Created 100 jobs
+✅ Successfully scraped and stored 400 new jobs!
+✅ Job scraping completed successfully
+✅ Email sent successfully: 250 2.0.0 OK  1768631509 d2e1a72fcca58-81fa1296299sm3520567b3a.52 - gsmtp

@@ -1,0 +1,122 @@
+JOHN DEVELOPER
+
+📍 Location: Remote
+📧 john@example.com
+ | 📞 +1-234-567-8900
+🔗 LinkedIn: linkedin.com/in/johndeveloper
+🔗 GitHub: github.com/johndeveloper
+
+PROFESSIONAL SUMMARY
+
+Skilled Full Stack Developer with 5+ years of experience working on designing, developing, and maintaining reliable software applications. Experienced in application management, deploying cloud-based systems, and building scalable solutions. The ideal candidate profile includes strong frontend and backend expertise, hands-on cloud experience, and the ability to work effectively in Agile development environments.
+
+TECHNICAL SKILLS
+Programming Languages
+
+JavaScript, TypeScript, Python, Java
+
+Frontend Technologies
+
+React, HTML5, CSS3, Tailwind CSS
+
+Backend Technologies
+
+Node.js, Express.js, NestJS, FastAPI
+
+Databases & Data Management
+
+PostgreSQL, MySQL, MongoDB, Redis
+(Data storage, retrieval, and database management)
+
+Cloud, DevOps & Deployment
+
+AWS (EC2, S3, RDS), Docker, Kubernetes
+Basic knowledge of cloud services and container-based deployments
+
+CI/CD & Tools
+
+Jenkins, GitHub Actions, GitLab
+Git & GitHub for version control
+
+Architecture & Practices
+
+REST APIs, Microservices Architecture
+Agile/Scrum methodology, software development best practices
+
+PROFESSIONAL EXPERIENCE
+Senior Full Stack Developer
+
+TechCorp Inc. | Remote | 2021 – Present
+
+Developed, built, and maintained full-stack software applications
+
+Designed and developed scalable RESTful APIs using Node.js and Express.js
+
+Built responsive frontend applications using React and TypeScript
+
+Worked on application management, deployment, and monitoring
+
+Implemented microservices architecture for scalable systems
+
+Containerized applications using Docker and Kubernetes (container-based deployments)
+
+Deployed applications on AWS and handled cloud resource management
+
+Designed databases for efficient data storage and retrieval
+
+Collaborated with cross-functional teams during development cycles
+
+Wrote clean, maintainable, and efficient code
+
+Troubleshot and debugged issues across frontend and backend
+
+Followed best practices and coding standards
+
+Performed code reviews and mentored junior developers
+
+Full Stack Developer
+
+WebSolutions Ltd. | 2019 – 2021
+
+Worked on developing and maintaining web applications
+
+Built backend services and APIs using Node.js
+
+Participated in deployment, monitoring, and maintenance activities
+
+Collaborated with team members in Agile/Scrum cycles
+
+Improved application reliability and performance
+
+Junior Developer
+
+StartupHub | 2018 – 2019
+
+Developed UI components using modern JavaScript frameworks
+
+Worked on backend development using Python
+
+Assisted in database management, data storage, and retrieval
+
+Participated in sprint planning and Agile methodology
+
+EDUCATION
+
+Bachelor’s Degree in Computer Science or related field
+University of Technology | 2018
+
+CERTIFICATIONS
+
+AWS Certified Solutions Architect
+
+Docker Certified Developer
+
+Kubernetes Certified Application Developer
+
+PROJECTS
+
+Microservices Migration from Monolithic Architecture
+
+E-commerce Platform using React, NestJS, PostgreSQL
+
+Real-time Analytics Dashboard with Redis Caching

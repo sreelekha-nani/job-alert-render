@@ -1,0 +1,104 @@
+// ======================
+// DATABASE
+// ======================
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// ======================
+// PRISMA CLIENT
+// ======================
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ======================
+// USER
+// ======================
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  password  String
+  name      String?
+  googleId  String?  @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  preferences UserPreferences?
+  alerts      Alert[]
+  stats       Stat[]
+}
+
+// ======================
+// USER PREFERENCES
+// ======================
+model UserPreferences {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId           String   @unique @db.ObjectId
+  user             User     @relation(fields: [userId], references: [id])
+
+  keywords         String[]
+  locations        String[]
+  experienceLevels String[]
+  jobTypes         String[]   // Full-time | Part-time | Remote
+
+  minSalary        Int?
+  autoApplyThreshold Int @default(80)
+
+  resumeEmbedding  Float[]
+}
+
+// ======================
+// JOB (CORE – THIS IS IMPORTANT)
+// ======================
+model Job {
+  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
+
+  title                String
+  company              String
+  location             String
+  jobType              String          // ✅ MUST MATCH SEED
+  experienceLevel      String?
+  salary               String?
+  description          String
+
+  keywords             String[]
+  descriptionEmbedding Float[]
+
+  url                  String   @unique
+  postedAt             DateTime @default(now())
+
+  @@index([title, location, jobType, experienceLevel, postedAt])
+}
+
+// ======================
+// ALERTS
+// ======================
+model Alert {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+
+  jobId     String   @db.ObjectId
+  type      String   // new_match | auto_apply
+  message   String
+
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// ======================
+// STATS
+// ======================
+model Stat {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+
+  type      String   // total_applied | matches_today | auto_applied
+  count     Int      @default(0)
+  date      DateTime @default(now())
+}
+sss

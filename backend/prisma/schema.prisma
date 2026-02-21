@@ -1,0 +1,99 @@
+// ======================
+// DATABASE
+// ======================
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// ======================
+// PRISMA CLIENT
+// ======================
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ======================
+// USER
+// ======================
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  password  String
+  name      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  preferences UserPreferences?
+}
+
+// ======================
+// USER PREFERENCES
+// ======================
+model UserPreferences {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String   @unique @db.ObjectId
+  user              User     @relation(fields: [userId], references: [id])
+
+  keywords           String[]
+  locations          String[]
+  experienceLevels   String[]
+  minSalary          Int?
+  autoApplyThreshold Int      @default(80)
+
+  resumeEmbedding    Float[]
+}
+
+// ======================
+// JOB (CORE MODEL)
+// ======================
+model Job {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+
+  title       String
+  company     String
+  location    String
+  description String
+
+  salary           String?
+  experienceLevel  String?
+  jobType          String?
+  
+  // Enhanced keyword extraction
+  keywords              String[]      // General keywords
+  technicalSkills       String[]      // Programming languages, frameworks, databases
+  softSkills            String[]      // Communication, leadership, etc.
+  requiredExperience    Int?          // Years of experience required
+  educationLevel        String?       // Bachelor, Master, PhD
+  
+  // Metadata for better matching
+  descriptionEmbedding  Float[]
+  skillMatchScore       Int?          // Pre-calculated skill match score (0-100)
+
+  url         String   @unique
+  postedAt    DateTime @default(now())
+  scrapedAt   DateTime @default(now())
+
+  @@index([title, location, experienceLevel, jobType, postedAt])
+  @@index([keywords])
+  @@index([technicalSkills])
+}
+
+// ======================
+// APPLIED JOB (TRACKING)
+// ======================
+model AppliedJob {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  jobId     String   @db.ObjectId
+
+  atsScore  Int?
+  status    String   @default("applied") // applied, rejected, accepted, pending
+
+  appliedAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, jobId])
+  @@index([userId, status])
+}
