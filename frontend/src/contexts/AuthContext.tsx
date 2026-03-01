@@ -1,18 +1,18 @@
 import { createContext, useState, useContext, useEffect, ReactNode, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../services/api'; // 🔥 IMPORTANT
 
 export interface User {
   id: string;
   name: string;
   email: string;
-  token?: string;
 }
 
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
   loading: boolean;
-  login: (user: User, token:string) => void;
+  login: (user: User) => void;
   logout: () => void;
   setUser: (user: User | null) => void;
 }
@@ -24,52 +24,38 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  /* ================= RESTORE SESSION USING COOKIE ================= */
   useEffect(() => {
     const restoreSession = async () => {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
       try {
-        const response = await fetch('/api/auth/me', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (response.ok) {
-          const userData: User = await response.json();
-          setUser({ ...userData, token });
-        } else {
-          localStorage.removeItem('authToken');
-        }
+        const response = await api.get('/users/me'); // 🔥 correct backend call
+        setUser(response.data);
       } catch (error) {
         console.error('Failed to restore session:', error);
-        localStorage.removeItem('authToken');
+        setUser(null);
       } finally {
         setLoading(false);
       }
     };
+
     restoreSession();
   }, []);
 
-  const login = useCallback((userData: User, token: string) => {
-    setUser({ ...userData, token });
-    localStorage.setItem('authToken', token);
+  /* ================= LOGIN ================= */
+  const login = useCallback((userData: User) => {
+    setUser(userData);
     navigate('/dashboard');
   }, [navigate]);
 
+  /* ================= LOGOUT ================= */
   const logout = useCallback(async () => {
     try {
-        await fetch('/api/auth/logout', { method: 'POST' });
-    } catch(error) {
-        console.error('Logout failed:', error);
+      await api.post('/auth/logout'); // 🔥 correct backend logout
+    } catch (error) {
+      console.error('Logout failed:', error);
     } finally {
-        setUser(null);
-        localStorage.removeItem('authToken');
-        navigate('/');
+      setUser(null);
+      navigate('/');
     }
   }, [navigate]);
 
@@ -89,7 +75,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
