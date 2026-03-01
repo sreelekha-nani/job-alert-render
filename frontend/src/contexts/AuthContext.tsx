@@ -12,6 +12,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  token?: string;
 }
 
 interface AuthContextType {
@@ -42,7 +43,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
       try {
         const res = await api.get("/auth/me");
-        setUser(res.data);
+          // include token from localStorage on the user object for convenience
+          setUser({ ...(res.data as any), token });
       } catch (err) {
         localStorage.removeItem("authToken");
         setUser(null);
@@ -56,7 +58,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   const login = useCallback((userData: User, token: string) => {
     localStorage.setItem("authToken", token);
-    setUser(userData);
+    setUser({ ...userData, token });
   }, []);
 
   const logout = useCallback(async () => {

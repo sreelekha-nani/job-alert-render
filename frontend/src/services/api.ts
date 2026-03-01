@@ -1,101 +1,90 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useAuth } from '../contexts/AuthContext';
-import api from '../lib/api';
+import axios, { AxiosInstance } from "axios";
 
-const ProfilePage: React.FC = () => {
-  const { user, setUser, loading: authLoading } = useAuth();
-  
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+const baseURL = import.meta.env.PROD
+  ? "https://job-alert-render-3.onrender.com/api"
+  : "/api";
 
-  useEffect(() => {
-    if (user) {
-      setName(user.name || '');
-      setEmail(user.email);
-    }
-  }, [user]);
+const api: AxiosInstance = axios.create({
+  baseURL,
+  withCredentials: true,
+});
 
-  const handleUpdateProfile = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setSuccessMessage('');
-    setErrorMessage('');
-
-    try {
-      const response = await api.put('/users/profile', { name, email });
-      if (response.status === 200) {
-        setUser(response.data); // Update global user state
-        setSuccessMessage('Profile updated successfully!');
-      } else {
-        throw new Error(response.data.message || 'Failed to update profile.');
-      }
-    } catch (error: any) {
-      setErrorMessage(error.message || 'An unexpected error occurred.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (authLoading) {
-    return <div className="text-center p-8">Loading profile...</div>;
+// Attach token automatically
+api.interceptors.request.use((config: any) => {
+  const token = localStorage.getItem("authToken");
+  if (token && config && config.headers) {
+    config.headers["Authorization"] = `Bearer ${token}`;
   }
+  return config;
+});
 
-  if (!user) {
-    return <div className="text-center p-8 text-red-500">Could not load user profile. Please log in again.</div>;
-  }
+// Refresh flow: if 401, attempt refresh once and retry queued requests
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (value?: unknown) => void;
+  reject: (reason?: any) => void;
+}> = [];
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="container mx-auto p-4 md:p-8"
-    >
-      <h1 className="text-4xl font-bold text-white mb-8">My Profile</h1>
-      
-      <div className="max-w-2xl mx-auto bg-gray-800 p-8 rounded-lg shadow-lg border border-gray-700">
-        <form onSubmit={handleUpdateProfile} className="space-y-6">
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">Name</label>
-            <input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full p-3 bg-gray-700 rounded text-white border border-gray-600 focus:ring-purple-500 focus:border-purple-500"
-            />
-          </div>
-          
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">Email</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 bg-gray-700 rounded text-white border border-gray-600 focus:ring-purple-500 focus:border-purple-500"
-            />
-          </div>
-
-          {successMessage && <p className="text-green-400 text-sm">{successMessage}</p>}
-          {errorMessage && <p className="text-red-400 text-sm">{errorMessage}</p>}
-          
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-purple-600 text-white font-bold py-3 rounded-md hover:bg-purple-700 disabled:bg-gray-500 disabled:cursor-not-allowed transition-colors"
-            >
-              {loading ? 'Saving...' : 'Save Changes'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </motion.div>
-  );
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach((p) => {
+    if (error) p.reject(error);
+    else p.resolve(token);
+  });
+  failedQueue = [];
 };
 
-export default ProfilePage;
+api.interceptors.response.use(
+  (res) => res,
+  async (err: any) => {
+    const originalRequest = err.config;
+    if (err.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            if (token && originalRequest.headers)
+              originalRequest.headers["Authorization"] = `Bearer ${token}`;
+            return api(originalRequest);
+          })
+          .catch((e) => Promise.reject(e));
+      }
+
+      isRefreshing = true;
+
+      return new Promise(async (resolve, reject) => {
+        try {
+          const refreshRes = await api.post("/auth/refresh");
+          const newToken = refreshRes.data?.token;
+          if (newToken) {
+            localStorage.setItem("authToken", newToken);
+            api.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
+          }
+          processQueue(null, newToken ?? null);
+          if (originalRequest.headers && newToken)
+            originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+          resolve(api(originalRequest));
+        } catch (e) {
+          processQueue(e, null);
+          localStorage.removeItem("authToken");
+          window.location.href = "/";
+          reject(e);
+        } finally {
+          isRefreshing = false;
+        }
+      });
+    }
+
+    return Promise.reject(err);
+  }
+);
+
+// Helper API functions
+export const fetchJobsAPI = async <T = any[]>(): Promise<T> => {
+  const res = await api.get("/jobs");
+  return res.data as T;
+};
+
+export default api;
