@@ -8,25 +8,27 @@ import passport from "passport";
 import { setupPassport } from "./middlewares/passport";
 import cookieParser from "cookie-parser";
 
+/* ================= APP INIT ================= */
 const app = express();
 
 /* ================= PASSPORT ================= */
 setupPassport();
 app.use(passport.initialize());
 
-/* ================= MIDDLEWARES ================= */
+/* ================= SECURITY & MIDDLEWARES ================= */
 app.use(helmet());
 app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-/* ================= ✅ CORS FIX (IMPORTANT) ================= */
+/* ================= ✅ CORS CONFIG (PRODUCTION READY) ================= */
 app.use(
   cors({
     origin: [
-      "http://localhost:5173", // ✅ Vite frontend
-      "http://localhost:3000", // optional (keep safe)
+      "http://localhost:5173", // Local Vite frontend
+      "http://localhost:3000", // Optional local
+      "https://job-alert-render-2.onrender.com", // ✅ Production frontend
     ],
     credentials: true,
   })
