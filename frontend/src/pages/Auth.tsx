@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth, User } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import api from "../api"; // ✅ USE AXIOS INSTANCE
 
 const words = ["Faster", "Smarter", "Better"];
 
@@ -33,14 +34,13 @@ const AuthPage: React.FC = () => {
     const trimmedPassword = password.trim();
     const trimmedName = name.trim();
 
-    // ✅ Frontend validation
     if (!trimmedEmail || !trimmedPassword) {
       setError("Email and password are required");
       return;
     }
 
     if (activeTab === "register") {
-      if (trimmedName.length < 1) {
+      if (!trimmedName) {
         setError("Name is required");
         return;
       }
@@ -53,12 +53,6 @@ const AuthPage: React.FC = () => {
     setLoading(true);
     setError(null);
 
-    // ✅ USE PROXY (VERY IMPORTANT)
-    const endpoint =
-      activeTab === "login"
-        ? "/api/auth/login"
-        : "/api/auth/register";
-
     const body =
       activeTab === "login"
         ? { email: trimmedEmail, password: trimmedPassword }
@@ -69,41 +63,21 @@ const AuthPage: React.FC = () => {
           };
 
     try {
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include", // 🔥 REQUIRED for cookies
-        body: JSON.stringify(body),
-      });
+      const response =
+        activeTab === "login"
+          ? await api.post("/auth/login", body)
+          : await api.post("/auth/register", body);
 
-      let data: any = {};
-      const contentType = res.headers.get("content-type");
-      
-      // Check if response is JSON
-      if (contentType && contentType.includes("application/json")) {
-        try {
-          data = await res.json();
-        } catch (e) {
-          console.error("Failed to parse JSON:", e);
-          data = { message: "Invalid server response" };
-        }
-      } else {
-        const text = await res.text();
-        console.error("Non-JSON response:", text);
-        data = { message: `Server returned invalid response (${res.status} ${res.statusText})` };
-      }
+      // ✅ IMPORTANT: token field
+      login(response.data.user as User, response.data.token);
 
-      if (!res.ok) {
-        throw new Error(data.message || data.errors?.[0]?.message || "Authentication failed");
-      }
-
-      // ✅ Store user + token in context
-      login(data.user as User, data.token);
-
-      // ✅ Redirect after success
       navigate("/dashboard");
     } catch (err: any) {
-      setError(err.message || "Something went wrong");
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Authentication failed"
+      );
       console.error("Auth error:", err);
     } finally {
       setLoading(false);
@@ -199,5 +173,4 @@ const AuthPage: React.FC = () => {
     </div>
   );
 };
-
 export default AuthPage;
