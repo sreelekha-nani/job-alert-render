@@ -44,16 +44,18 @@ const startServer = async () => {
     await prisma.$connect();
     console.log("🚀 Connected to MongoDB via Prisma");
 
-    // Initialize database (drop legacy indexes)
     await initializeDatabase();
 
-    server.listen(config.port, async () => {
-      console.log(`🚀 Server listening on http://localhost:${config.port}`);
-      // Initialize cron jobs (including initial scrape) unless disabled
-      if (process.env.SKIP_CRON !== 'true') {
+    // 🔥 IMPORTANT FIX FOR RENDER
+    const PORT = process.env.PORT || config.port || 5000;
+
+    server.listen(PORT, async () => {
+      console.log(`🚀 Server listening on port ${PORT}`);
+
+      if (process.env.SKIP_CRON !== "true") {
         await initCronJobs();
       } else {
-        console.log('⚠️ SKIP_CRON=true — skipping cron job initialization');
+        console.log("⚠️ SKIP_CRON=true — skipping cron job initialization");
       }
     });
   } catch (error) {
@@ -78,6 +80,3 @@ const shutdown = async () => {
 
 process.on("SIGINT", shutdown);
 process.on("SIGTERM", shutdown);
-// process.on("SIGINT", shutdown);
-// process.on("SIGTERM", shutdown);
-// initCronJobs();
