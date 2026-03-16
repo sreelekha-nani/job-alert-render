@@ -27,18 +27,31 @@ const AuthPage: React.FC = () => {
 
       const body =
         activeTab === "login"
-          ? { email, password }
-          : { name, email, password };
+          ? { email: email.toLowerCase().trim(), password }
+          : { name, email: email.toLowerCase().trim(), password };
 
-      const res = await api.post(endpoint, body);
+      // Add a safety timeout
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Request timed out. Please check your connection.")), 15000)
+      );
 
-      login(res.data.user as User, res.data.token);
+      const res = (await Promise.race([
+        api.post(endpoint, body),
+        timeoutPromise
+      ])) as any;
 
-      navigate("/dashboard");
+      if (res.data?.user) {
+        login(res.data.user as User, res.data.token);
+        navigate("/dashboard");
+      } else {
+        throw new Error("Invalid response from server");
+      }
     } catch (err: any) {
+      console.error("Auth error:", err);
       setError(
         err.response?.data?.message ||
-          "Authentication failed. Please try again."
+        err.message ||
+        "Authentication failed. Please try again."
       );
     } finally {
       setLoading(false);

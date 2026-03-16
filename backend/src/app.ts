@@ -28,7 +28,8 @@ app.use(
     origin: [
       "http://localhost:5173", // Local Vite frontend
       "http://localhost:3000", // Optional local
-      "https://job-alert-render-2.onrender.com", // ✅ Production frontend
+      config.clientUrl,        // ✅ Production frontend from config
+      "https://job-alert-render-2.onrender.com", // Keep previous as fallback
     ],
     credentials: true,
   })

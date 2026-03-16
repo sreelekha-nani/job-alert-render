@@ -1,5 +1,5 @@
 import passport from 'passport';
-import { Strategy as JwtStrategy } from 'passport-jwt';
+import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import { VerifyCallback } from 'passport-jwt';
 import { Request } from 'express';
 import config from '../config';
@@ -13,14 +13,21 @@ export interface JwtPayload {
   email: string;
 }
 
-/* ================= ACCESS TOKEN FROM COOKIE ================= */
+/* ================= ACCESS TOKEN FROM COOKIE OR HEADER ================= */
 
 const accessTokenExtractor = (req: Request): string | null => {
-  return req.cookies?.accessToken || null;
+  let token = null;
+  if (req && req.cookies) {
+    token = req.cookies['accessToken'];
+  }
+  if (!token) {
+    token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+  }
+  return token;
 };
 
 const jwtOptions = {
-  jwtFromRequest: accessTokenExtractor, // 🔥 Extract from cookie
+  jwtFromRequest: accessTokenExtractor, 
   secretOrKey: config.jwt.accessSecret,
 };
 

@@ -66,19 +66,33 @@ export const loginHandler = async (
   res: Response,
   next: NextFunction
 ) => {
+  console.log(`📡 Login request received for: ${req.body?.email}`);
+  const startTime = Date.now();
   try {
     const { user, accessToken, refreshToken } =
       await authService.loginUser(req.body);
 
+    console.log(`✅ Login successful for ${req.body?.email} in ${Date.now() - startTime}ms`);
+
     setAuthCookies(res, accessToken, refreshToken);
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Login successful",
       user,
       token: accessToken,
     });
-  } catch (error) {
-    console.error("Login error:", error);
+  } catch (error: any) {
+    const duration = Date.now() - startTime;
+    console.error(`❌ Login error for ${req.body?.email} after ${duration}ms:`, error.message || error);
+    
+    // If it's an AppError, send the specific message and status code
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({
+        message: error.message,
+        status: 'error'
+      });
+    }
+    
     next(error);
   }
 };
